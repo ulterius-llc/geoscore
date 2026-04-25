@@ -1,6 +1,7 @@
 {
   "name": "geoscore",
   "version": "0.1.0",
+  "description": "A web app to track and score your world travel experiences.",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,15 +11,24 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "d3-geo": "^3.1.1",
+    "html2canvas": "^1.4.1",
+    "i18next": "^26.0.8",
+    "lucide-react": "^1.11.0",
     "next": "16.2.4",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-i18next": "^17.0.4",
+    "react-simple-maps": "^4.0.0-beta.6",
+    "world-atlas": "^2.0.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/d3-geo": "^3.1.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-simple-maps": "^3.0.6",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "prettier": "^3.8.3",

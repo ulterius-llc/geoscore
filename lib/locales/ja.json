@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "GeoScore",
+    "subtitle": "渡航経験スコア",
+    "documentTitle": "GeoScore - 渡航経験スコア",
+    "loading": "読み込み中..."
+  },
+  "status": {
+    "live": "居住",
+    "stay": "宿泊",
+    "visit": "訪問",
+    "transit": "乗り継ぎ",
+    "never": "未訪問"
+  },
+  "summary": {
+    "total": "合計スコア",
+    "max": "最大スコア",
+    "visited": "訪れた国",
+    "countries": "国",
+    "score": "点",
+    "average": "平均",
+    "rate": "達成率"
+  },
+  "continent": {
+    "asia": "アジア",
+    "europe": "ヨーロッパ",
+    "africa": "アフリカ",
+    "north_america": "北アメリカ",
+    "central_america": "中央アメリカ",
+    "south_america": "南アメリカ",
+    "oceania": "オセアニア",
+    "antarctica": "南極"
+  },
+  "region": {
+    "east_asia": "東アジア",
+    "southeast_asia": "東南アジア",
+    "south_asia": "南アジア",
+    "central_asia": "中央アジア",
+    "middle_east": "中東",
+    "northern_europe": "北ヨーロッパ",
+    "western_europe": "西ヨーロッパ",
+    "southern_europe": "南ヨーロッパ",
+    "eastern_europe": "東ヨーロッパ",
+    "north_africa": "北アフリカ",
+    "west_africa": "西アフリカ",
+    "central_africa": "中央アフリカ",
+    "east_africa": "東アフリカ",
+    "southern_africa": "南部アフリカ",
+    "north_america": "北アメリカ",
+    "central_america": "中央アメリカ",
+    "south_america": "南アメリカ",
+    "oceania": "オセアニア",
+    "antarctica": "南極"
+  },
+  "actions": {
+    "export": "エクスポート",
+    "import": "インポート",
+    "share": "画像で保存",
+    "shareLandscape": "横長で保存",
+    "sharePortrait": "縦長で保存",
+    "reset": "すべてリセット",
+    "close": "閉じる",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "resetView": "表示をリセット",
+    "language": "言語",
+    "cycle": "次のステータスへ"
+  },
+  "messages": {
+    "resetConfirm": "すべての記録を削除します。よろしいですか？",
+    "importSuccess": "{{count}} 件の記録をインポートしました。",
+    "importInvalid": "ファイルの形式が正しくありません。",
+    "shareGenerating": "画像を生成中...",
+    "shareSuccess": "画像をダウンロードしました。",
+    "shareError": "画像の生成に失敗しました。",
+    "interactionHint": "国をタップで編集／長押し・ダブルタップでステータスを切り替え"
+  },
+  "labels": {
+    "selectCountry": "地図か一覧で国を選ぶとステータスを変更できます。",
+    "noCountrySelected": "国が選択されていません",
+    "scoreSuffix": "点",
+    "scoreFormat": "{{n}}点",
+    "yourGeoScore": "あなたのGeoScore",
+    "generatedAt": "作成日",
+    "searchPlaceholder": "国名で検索",
+    "noResults": "該当する国がありません",
+    "ioTitle": "記録の入出力",
+    "shareTitle": "画像で共有",
+    "footer": "GeoScore - データはお使いの端末にのみ保存されます"
+  },
+  "nav": {
+    "home": "ホーム",
+    "list": "一覧",
+    "share": "共有"
+  }
+}

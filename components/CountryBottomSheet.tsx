@@ -1,0 +1,138 @@
+'use client';
+
+import { useEffect } from 'react';
+import { ChevronRight, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { COUNTRY_BY_ID } from '../lib/countries';
+import { SCORE_MAP, STATUS_ORDER, nextStatus } from '../lib/scoring';
+import type { Status, StatusRecord } from '../lib/types';
+import { useStatusColors } from './useStatusColors';
+import { useCountryName } from './useCountryName';
+
+interface CountryBottomSheetProps {
+  open: boolean;
+  selectedId: string | null;
+  records: StatusRecord;
+  onChangeStatus: (countryId: string, status: Status) => void;
+  onClose: () => void;
+}
+
+export function CountryBottomSheet({
+  open,
+  selectedId,
+  records,
+  onChangeStatus,
+  onClose,
+}: CountryBottomSheetProps) {
+  const { t } = useTranslation();
+  const colors = useStatusColors();
+  const getName = useCountryName();
+  const country = selectedId ? COUNTRY_BY_ID.get(selectedId) : null;
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  const visible = open && country !== null;
+  const status: Status = country ? (records[country.id] ?? 'never') : 'never';
+
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 z-40 flex items-end lg:hidden"
+      aria-hidden={!visible}
+    >
+      <button
+        type="button"
+        aria-label={t('actions.close')}
+        onClick={onClose}
+        className={`absolute inset-0 bg-black/40 transition-opacity ${
+          visible
+            ? 'pointer-events-auto opacity-100'
+            : 'pointer-events-none opacity-0'
+        }`}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        className={`bg-surface relative w-full rounded-t-2xl shadow-2xl transition-transform duration-200 ${
+          visible
+            ? 'pointer-events-auto translate-y-0'
+            : 'pointer-events-none translate-y-full'
+        }`}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="border-border flex items-start justify-between gap-3 border-b px-4 pt-3 pb-2.5">
+          <div className="min-w-0">
+            <p className="text-foreground truncate text-base font-semibold">
+              {country ? getName(country) : ''}
+            </p>
+            {country ? (
+              <p className="text-muted truncate text-xs">
+                {country.iso_a3} ・ {t(`region.${country.region}`)}
+              </p>
+            ) : null}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t('actions.close')}
+            className="text-muted hover:text-foreground -mt-1 -mr-1 rounded-full p-2"
+          >
+            <X className="h-5 w-5" aria-hidden />
+          </button>
+        </div>
+
+        <div className="px-3 py-3">
+          <div className="grid grid-cols-1 gap-2">
+            {STATUS_ORDER.map((s) => {
+              const active = s === status;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    if (country) onChangeStatus(country.id, s);
+                  }}
+                  className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-150 ease-out active:scale-[0.98] ${
+                    active
+                      ? 'border-foreground bg-background'
+                      : 'border-border bg-surface hover:bg-background'
+                  }`}
+                >
+                  <span className="flex items-center gap-3">
+                    <span
+                      aria-hidden
+                      className="inline-block h-4 w-4 rounded"
+                      style={{ backgroundColor: colors[s] }}
+                    />
+                    <span className="font-medium">{t(`status.${s}`)}</span>
+                  </span>
+                  <span className="text-muted text-xs tabular-nums">
+                    {SCORE_MAP[s]}
+                    {t('labels.scoreSuffix')}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {country ? (
+            <button
+              type="button"
+              onClick={() => onChangeStatus(country.id, nextStatus(status))}
+              className="text-muted hover:text-foreground mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg py-2 text-xs"
+            >
+              {t('actions.cycle')}
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+            </button>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}

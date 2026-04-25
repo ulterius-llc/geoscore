@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "GeoScore",
+    "subtitle": "Travel experience score",
+    "documentTitle": "GeoScore - Travel experience score",
+    "loading": "Loading..."
+  },
+  "status": {
+    "live": "Live",
+    "stay": "Stay",
+    "visit": "Visit",
+    "transit": "Transit",
+    "never": "Unvisited"
+  },
+  "summary": {
+    "total": "Total score",
+    "max": "Max score",
+    "visited": "Visited",
+    "countries": "countries",
+    "score": "pts",
+    "average": "Avg",
+    "rate": "Progress"
+  },
+  "continent": {
+    "asia": "Asia",
+    "europe": "Europe",
+    "africa": "Africa",
+    "north_america": "North America",
+    "central_america": "Central America",
+    "south_america": "South America",
+    "oceania": "Oceania",
+    "antarctica": "Antarctica"
+  },
+  "region": {
+    "east_asia": "East Asia",
+    "southeast_asia": "Southeast Asia",
+    "south_asia": "South Asia",
+    "central_asia": "Central Asia",
+    "middle_east": "Middle East",
+    "northern_europe": "Northern Europe",
+    "western_europe": "Western Europe",
+    "southern_europe": "Southern Europe",
+    "eastern_europe": "Eastern Europe",
+    "north_africa": "North Africa",
+    "west_africa": "West Africa",
+    "central_africa": "Central Africa",
+    "east_africa": "East Africa",
+    "southern_africa": "Southern Africa",
+    "north_america": "North America",
+    "central_america": "Central America",
+    "south_america": "South America",
+    "oceania": "Oceania",
+    "antarctica": "Antarctica"
+  },
+  "actions": {
+    "export": "Export",
+    "import": "Import",
+    "share": "Save as image",
+    "shareLandscape": "Landscape",
+    "sharePortrait": "Portrait (Story)",
+    "reset": "Reset all",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetView": "Reset view",
+    "language": "Language",
+    "cycle": "Next status"
+  },
+  "messages": {
+    "resetConfirm": "All records will be deleted. Continue?",
+    "importSuccess": "Imported {{count}} records.",
+    "importInvalid": "The file format is invalid.",
+    "shareGenerating": "Generating image...",
+    "shareSuccess": "Image downloaded.",
+    "shareError": "Failed to generate the image.",
+    "interactionHint": "Tap to edit a country. Long press or double tap to cycle status."
+  },
+  "labels": {
+    "selectCountry": "Tap a country on the map or in the list to change its status.",
+    "noCountrySelected": "No country selected",
+    "scoreSuffix": "pts",
+    "scoreFormat": "{{n}} pts",
+    "yourGeoScore": "Your GeoScore",
+    "generatedAt": "Generated",
+    "searchPlaceholder": "Search by country name",
+    "noResults": "No countries match your search.",
+    "ioTitle": "Import / export",
+    "shareTitle": "Share as image",
+    "footer": "GeoScore - Your data is stored only on this device"
+  },
+  "nav": {
+    "home": "Home",
+    "list": "List",
+    "share": "Share"
+  }
+}

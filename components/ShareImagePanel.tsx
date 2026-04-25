@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import {
   ComposableMap,
   Geographies,
@@ -24,6 +25,7 @@ const TEXT_PRIMARY = '#111418';
 const TEXT_MUTED = '#6b7280';
 const SURFACE = '#f7f7f8';
 const TRACK = '#e2e8f0';
+const PORTRAIT_TOTAL_Y_OFFSET = -36;
 
 type ShareFormat = 'landscape' | 'portrait';
 
@@ -34,6 +36,7 @@ interface ShareImagePanelProps {
 interface ShareCardProps {
   records: StatusRecord;
   format: ShareFormat;
+  generatedAt: string;
 }
 
 function computeBreakdown(records: StatusRecord) {
@@ -57,8 +60,6 @@ interface ContinentStat {
   continent: Continent;
   visited: number;
   total: number;
-  score: number;
-  max: number;
   pct: number;
 }
 
@@ -72,14 +73,12 @@ function computeContinentStats(records: StatusRecord): ContinentStat[] {
       if (status !== 'never') visited += 1;
       score += SCORE_MAP[status];
     }
-    const max = list.length * SCORE_MAP.live;
+    const maxScore = list.length * SCORE_MAP.live;
     return {
       continent,
       visited,
       total: list.length,
-      score,
-      max,
-      pct: max > 0 ? Math.round((score / max) * 100) : 0,
+      pct: maxScore > 0 ? Math.round((score / maxScore) * 100) : 0,
     };
   });
 }
@@ -104,7 +103,7 @@ function formatGeneratedAt(date: Date, lang: string): string {
 }
 
 const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
-  { records, format },
+  { records, format, generatedAt },
   ref
 ) {
   const { t, i18n } = useTranslation();
@@ -114,11 +113,10 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
   );
   const continents = useMemo(() => computeContinentStats(records), [records]);
   const visited = COUNTRIES.length - byStatus.never;
-  const max = COUNTRIES.length * SCORE_MAP.live;
-  const overallPct = max > 0 ? Math.round((total / max) * 100) : 0;
+  const maxScore = COUNTRIES.length * SCORE_MAP.live;
+  const overallPct = maxScore > 0 ? Math.round((total / maxScore) * 100) : 0;
   const lang = i18n.language ?? 'en';
   const isJa = lang.startsWith('ja');
-  const generatedAt = formatGeneratedAt(new Date(), lang);
   const formatScore = (n: number) => (isJa ? `${n}点` : `${n} pts`);
 
   if (format === 'portrait') {
@@ -165,37 +163,49 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
           <div style={{ fontSize: 26, color: TEXT_MUTED, letterSpacing: 0.5 }}>
             {t('summary.total')}
           </div>
+
           <div
             style={{
+              height: 240,
               display: 'flex',
-              alignItems: 'baseline',
-              gap: 16,
+              justifyContent: 'center',
+              alignItems: 'flex-end',
             }}
           >
-            <div
+            <span
               style={{
                 fontSize: 220,
                 lineHeight: 1,
                 fontWeight: 800,
                 color: PRIMARY,
                 fontVariantNumeric: 'tabular-nums',
+                display: 'block',
+                marginBottom: 0,
+                transform: `translateY(${PORTRAIT_TOTAL_Y_OFFSET}px)`,
               }}
             >
               {total}
-            </div>
-            <div
+            </span>
+
+            <span
               style={{
                 fontSize: 32,
+                lineHeight: 1,
+                fontWeight: 400,
                 color: TEXT_MUTED,
                 fontVariantNumeric: 'tabular-nums',
+                display: 'block',
+                marginLeft: 16,
+                marginBottom: 0,
               }}
             >
-              {`/ ${max} ${t('labels.scoreSuffix')}`}
-            </div>
+              {`/ ${maxScore} ${t('labels.scoreSuffix')}`}
+            </span>
           </div>
+
           <div
             style={{
-              marginTop: 8,
+              marginTop: 48,
               width: '100%',
               height: 18,
               background: TRACK,
@@ -237,13 +247,12 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
               style={{
                 background: SURFACE,
                 borderRadius: 20,
-                padding: '28px 18px',
+                padding: '12px 18px 36px',
                 borderTop: `6px solid ${STATUS_COLORS[status]}`,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: 12,
+                gap: 16,
                 textAlign: 'center',
               }}
             >
@@ -255,7 +264,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
                   fontWeight: 600,
                 }}
               >
-                {t(`status.${status}`)}
+                {`${t(`status.${status}`)}・${formatScore(SCORE_MAP[status])}`}
               </div>
               <div
                 style={{
@@ -267,15 +276,6 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
                 }}
               >
                 {byStatus[status]}
-              </div>
-              <div
-                style={{
-                  fontSize: 16,
-                  color: TEXT_MUTED,
-                  fontVariantNumeric: 'tabular-nums',
-                }}
-              >
-                {formatScore(SCORE_MAP[status])}
               </div>
             </div>
           ))}
@@ -462,11 +462,11 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
               background: SURFACE,
               borderRadius: 14,
               borderTop: `4px solid ${STATUS_COLORS[status]}`,
-              padding: '12px 16px',
+              padding: '12px 20px',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: 6,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              minHeight: '88px',
               minWidth: 0,
             }}
           >
@@ -476,17 +476,19 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
                 fontSize: 13,
                 whiteSpace: 'nowrap',
                 lineHeight: 1.2,
+                alignSelf: 'flex-start',
               }}
             >
-              {`${t(`status.${status}`)} ・ ${formatScore(SCORE_MAP[status])}`}
+              {`${t(`status.${status}`)}・${formatScore(SCORE_MAP[status])}`}
             </div>
             <div
               style={{
-                fontSize: 28,
+                fontSize: 32,
                 fontWeight: 700,
                 color: TEXT_PRIMARY,
                 fontVariantNumeric: 'tabular-nums',
                 lineHeight: 1,
+                alignSelf: 'center',
               }}
             >
               {byStatus[status]}
@@ -513,22 +515,37 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
 });
 
 export function ShareImagePanel({ records }: ShareImagePanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [format, setFormat] = useState<ShareFormat>('landscape');
+  const [generatedAt, setGeneratedAt] = useState<string>(() =>
+    formatGeneratedAt(new Date(), i18n.language ?? 'en')
+  );
 
   async function handleDownload(target: ShareFormat) {
     if (busy) return;
-    setFormat(target);
-    setBusy(true);
-    setMessage(t('messages.shareGenerating'));
+
+    flushSync(() => {
+      setFormat(target);
+      setBusy(true);
+      setMessage(t('messages.shareGenerating'));
+      setGeneratedAt(formatGeneratedAt(new Date(), i18n.language ?? 'en'));
+    });
+
     await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+
+    if ('fonts' in document) {
+      await (document as Document & { fonts: FontFaceSet }).fonts.ready;
+    }
+
     if (!cardRef.current) {
       setBusy(false);
       return;
     }
+
     try {
       const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(cardRef.current, {
@@ -599,7 +616,12 @@ export function ShareImagePanel({ records }: ShareImagePanelProps) {
           opacity: 0,
         }}
       >
-        <ShareCard ref={cardRef} records={records} format={format} />
+        <ShareCard
+          ref={cardRef}
+          records={records}
+          format={format}
+          generatedAt={generatedAt}
+        />
       </div>
     </div>
   );

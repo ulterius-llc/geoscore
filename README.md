@@ -1,6 +1,6 @@
 # GeoScore
 
-A personal web app to track and score my world travel experiences.
+A web app to track and score my world travel experiences.
 Data is saved locally in the browser (`localStorage`).
 
 ## Tech Stack

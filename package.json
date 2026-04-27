@@ -2,7 +2,15 @@
   "name": "geoscore",
   "version": "0.1.0",
   "description": "A web app to track and score your world travel experiences.",
-  "private": true,
+  "author": "Ulterius LLC",
+  "homepage": "https://geoscore.ulterius.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ulterius-llc/geoscore"
+  },
+  "bugs": {
+    "url": "https://github.com/ulterius-llc/geoscore/issues"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

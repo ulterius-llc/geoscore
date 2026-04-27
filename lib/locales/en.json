@@ -91,6 +91,7 @@
   "nav": {
     "home": "Home",
     "list": "List",
-    "share": "Share"
+    "share": "Share",
+    "ariaLabel": "Main navigation"
   }
 }

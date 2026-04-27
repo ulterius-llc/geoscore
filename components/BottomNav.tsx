@@ -24,9 +24,11 @@ export function BottomNav({ value, onChange }: BottomNavProps) {
   const { t } = useTranslation();
   return (
     <nav
-      aria-label="メインナビゲーション"
-      className="border-border bg-surface/95 fixed inset-x-0 bottom-0 z-30 border-t backdrop-blur lg:hidden"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      aria-label={t('nav.ariaLabel')}
+      className="border-border bg-surface/95 fixed inset-x-0 bottom-0 z-30 border-t backdrop-blur lg:hidden pt-2"
+      style={{
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)',
+      }}
     >
       <ul className="mx-auto grid max-w-md grid-cols-3">
         {ITEMS.map((item) => {
@@ -38,7 +40,7 @@ export function BottomNav({ value, onChange }: BottomNavProps) {
                 type="button"
                 onClick={() => onChange(item.id)}
                 aria-current={active ? 'page' : undefined}
-                className={`relative flex w-full flex-col items-center gap-0.5 py-2.5 text-[11px] transition-colors duration-150 active:scale-95 ${
+                className={`relative flex w-full flex-col items-center gap-0.5 py-2 text-[11px] transition-colors duration-150 active:scale-95 ${
                   active ? 'text-foreground' : 'text-muted'
                 }`}
               >

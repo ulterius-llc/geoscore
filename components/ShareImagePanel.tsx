@@ -106,7 +106,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
   { records, format, generatedAt },
   ref
 ) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { byStatus, total } = useMemo(
     () => computeBreakdown(records),
     [records]
@@ -115,9 +115,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
   const visited = COUNTRIES.length - byStatus.never;
   const maxScore = COUNTRIES.length * SCORE_MAP.live;
   const overallPct = maxScore > 0 ? Math.round((total / maxScore) * 100) : 0;
-  const lang = i18n.language ?? 'en';
-  const isJa = lang.startsWith('ja');
-  const formatScore = (n: number) => (isJa ? `${n}点` : `${n} pts`);
+  const formatScore = (n: number) => t('labels.scoreFormat', { n });
 
   if (format === 'portrait') {
     return (

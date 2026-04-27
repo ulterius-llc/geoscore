@@ -1,0 +1,53 @@
+name: Country Data Issue
+description: Report incorrect country data or request additions
+title: "[Country]: "
+labels: ["country-data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to report incorrect country names, missing countries, or map rendering issues.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      options:
+        - Missing country
+        - Incorrect name (Japanese)
+        - Incorrect name (English)
+        - Incorrect region/classification
+        - Map rendering issue
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: country
+    attributes:
+      label: Country Name
+      description: The country in question (English or Japanese).
+      placeholder: e.g. United States / アメリカ合衆国
+    validations:
+      required: true
+
+  - type: input
+    id: iso
+    attributes:
+      label: ISO Code (if known)
+      description: ISO 3166-1 alpha-3 or numeric code.
+      placeholder: e.g. USA / 840
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the issue in detail.
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Reference / Source
+      description: Link to authoritative source (UN, ISO, Wikipedia, etc.) if applicable.

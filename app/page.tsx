@@ -81,7 +81,7 @@ export default function HomePage() {
     <>
       <Header />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-4 pb-24 lg:py-6 lg:pb-6">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
           <section className={`${homeMobile} min-w-0 flex-col gap-4 lg:flex`}>
             <WorldMap
               records={records}
@@ -114,7 +114,7 @@ export default function HomePage() {
           </section>
 
           <section
-            className={`${listMobile} flex-col gap-4 lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-6rem)] lg:overflow-auto`}
+            className={`${listMobile} flex-col gap-4 lg:sticky lg:top-20 lg:flex lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-auto`}
           >
             <CountryListPanel
               records={records}
@@ -147,9 +147,11 @@ export default function HomePage() {
               <ShareImagePanel records={records} />
             </div>
           </section>
-        </div>
 
-        <Footer />
+          <div className="lg:col-span-2">
+            <Footer />
+          </div>
+        </div>
       </main>
 
       <CountryBottomSheet

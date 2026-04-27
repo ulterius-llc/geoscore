@@ -25,7 +25,7 @@ export function BottomNav({ value, onChange }: BottomNavProps) {
   return (
     <nav
       aria-label={t('nav.ariaLabel')}
-      className="border-border bg-surface/95 fixed inset-x-0 bottom-0 z-30 border-t backdrop-blur lg:hidden pt-2"
+      className="border-border bg-surface/95 fixed inset-x-0 bottom-0 z-30 border-t pt-2 backdrop-blur lg:hidden"
       style={{
         paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)',
       }}
@@ -40,12 +40,12 @@ export function BottomNav({ value, onChange }: BottomNavProps) {
                 type="button"
                 onClick={() => onChange(item.id)}
                 aria-current={active ? 'page' : undefined}
-                className={`relative flex w-full flex-col items-center gap-0.5 py-2 text-[11px] transition-colors duration-150 active:scale-95 ${
+                className={`flex w-full flex-col items-center gap-0.5 py-2 text-[11px] transition-colors duration-150 active:scale-95 ${
                   active ? 'text-foreground' : 'text-muted'
                 }`}
               >
                 <Icon
-                  className={`h-5 w-5 transition-all duration-200 ${active ? 'scale-110 opacity-100' : 'scale-100 opacity-80'}`}
+                  className={`h-5 w-5 transition-all duration-200 ${active ? 'opacity-100' : 'opacity-80'}`}
                   strokeWidth={active ? 2.2 : 1.8}
                   aria-hidden
                 />
@@ -54,8 +54,8 @@ export function BottomNav({ value, onChange }: BottomNavProps) {
                 </span>
                 <span
                   aria-hidden
-                  className={`bg-foreground absolute top-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-b-full transition-opacity duration-200 ${
-                    active ? 'opacity-100' : 'opacity-0'
+                  className={`mt-1 h-0.5 w-5 rounded-full transition-opacity duration-200 ${
+                    active ? 'bg-foreground opacity-100' : 'opacity-0'
                   }`}
                 />
               </button>

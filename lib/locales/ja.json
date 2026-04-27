@@ -88,7 +88,7 @@
     "noResults": "該当する国がありません",
     "ioTitle": "記録の入出力",
     "shareTitle": "画像で共有",
-    "footer": "GeoScore - データはお使いの端末にのみ保存されます"
+    "privacyPolicy": "プライバシーポリシー"
   },
   "nav": {
     "home": "ホーム",

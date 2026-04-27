@@ -3,17 +3,18 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Header } from '../components/Header';
-import { CountryListPanel } from '../components/CountryListPanel';
-import { ScoreSummary } from '../components/ScoreSummary';
-import { ContinentBadges } from '../components/ContinentBadges';
-import { SelectedCountryCard } from '../components/SelectedCountryCard';
-import { Legend } from '../components/Legend';
-import { ImportExportButtons } from '../components/ImportExportButtons';
-import { ShareImagePanel } from '../components/ShareImagePanel';
 import { BottomNav, type MobileView } from '../components/BottomNav';
+import { ContinentBadges } from '../components/ContinentBadges';
 import { CountryBottomSheet } from '../components/CountryBottomSheet';
+import { CountryListPanel } from '../components/CountryListPanel';
+import { Footer } from '../components/Footer';
 import { useGeoScore } from '../components/GeoScoreProvider';
+import { Header } from '../components/Header';
+import { ImportExportButtons } from '../components/ImportExportButtons';
+import { Legend } from '../components/Legend';
+import { ScoreSummary } from '../components/ScoreSummary';
+import { SelectedCountryCard } from '../components/SelectedCountryCard';
+import { ShareImagePanel } from '../components/ShareImagePanel';
 import { nextStatus } from '../lib/scoring';
 import type { Status } from '../lib/types';
 
@@ -148,9 +149,7 @@ export default function HomePage() {
           </section>
         </div>
 
-        <footer className="text-muted py-6 text-center text-xs">
-          {t('labels.footer')}
-        </footer>
+        <Footer />
       </main>
 
       <CountryBottomSheet

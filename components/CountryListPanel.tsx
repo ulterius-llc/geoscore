@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import { ChevronDown, Search, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   CONTINENT_ORDER,
@@ -10,7 +10,6 @@ import {
   REGIONS_BY_CONTINENT,
 } from '../lib/countries';
 import { SCORE_MAP } from '../lib/scoring';
-import { nextStatus } from '../lib/scoring';
 import type {
   Continent,
   Country,
@@ -19,9 +18,8 @@ import type {
   StatusRecord,
 } from '../lib/types';
 import { StatusSelector } from './StatusSelector';
-import { useStatusColors } from './useStatusColors';
 import { useCountryName } from './useCountryName';
-import { useLongPress } from './useLongPress';
+import { useStatusColors } from './useStatusColors';
 
 interface CountryListPanelProps {
   records: StatusRecord;
@@ -268,9 +266,6 @@ function CountryRow({
   const { t } = useTranslation();
   const colors = useStatusColors();
   const getName = useCountryName();
-  const longPress = useLongPress<HTMLButtonElement>(() => {
-    onChangeStatus(nextStatus(status));
-  });
   return (
     <li
       className={`px-3 py-2 transition-colors duration-150 ${isSelected ? 'bg-background' : ''}`}
@@ -278,10 +273,7 @@ function CountryRow({
       <button
         type="button"
         onClick={onSelect}
-        onDoubleClick={() => onChangeStatus(nextStatus(status))}
-        {...longPress}
         className="flex w-full items-center justify-between gap-3 text-left"
-        title={t('messages.interactionHint') ?? undefined}
       >
         <span className="flex min-w-0 items-center gap-2.5">
           <span

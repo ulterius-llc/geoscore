@@ -16,8 +16,6 @@ export const SCORE_MAP: Record<Status, number> = {
   never: 0,
 };
 
-// Single coherent palette: cool greens for "settled", sky for "passing through",
-// amber accent for the brief transit touch, neutral slate for unvisited.
 export const STATUS_COLORS: Record<Status, string> = {
   live: '#0f766e',
   stay: '#5eead4',
@@ -33,9 +31,3 @@ export const STATUS_DARK_COLORS: Record<Status, string> = {
   transit: '#fcd34d',
   never: '#1f2937',
 };
-
-export function nextStatus(current: Status | undefined): Status {
-  const order: Status[] = ['never', 'transit', 'visit', 'stay', 'live'];
-  const idx = order.indexOf(current ?? 'never');
-  return order[(idx + 1) % order.length];
-}

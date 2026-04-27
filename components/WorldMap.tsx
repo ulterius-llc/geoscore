@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { RotateCcw } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ComposableMap,
   Geographies,
@@ -8,8 +10,6 @@ import {
   Sphere,
   ZoomableGroup,
 } from 'react-simple-maps';
-import { RotateCcw } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { COUNTRY_BY_ID, resolveCountryId } from '../lib/countries';
 import { STATUS_COLORS, STATUS_DARK_COLORS } from '../lib/scoring';
 import type { Status, StatusRecord } from '../lib/types';
@@ -18,29 +18,21 @@ interface WorldMapProps {
   records: StatusRecord;
   selectedId: string | null;
   onSelect: (countryId: string) => void;
-  onCycle: (countryId: string) => void;
   geographyUrl?: string;
 }
 
 const DEFAULT_GEOGRAPHY = '/world-110m.json';
-const LONG_PRESS_MS = 450;
-const DOUBLE_TAP_MS = 280;
 
 export function WorldMap({
   records,
   selectedId,
   onSelect,
-  onCycle,
   geographyUrl = DEFAULT_GEOGRAPHY,
 }: WorldMapProps) {
   const [isDark, setIsDark] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const longPressFired = useRef(false);
-  const lastTapRef = useRef<{ id: string; time: number } | null>(null);
-  const downPosRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
@@ -72,52 +64,7 @@ export function WorldMap({
       : [-98, 38]
     : [15, 20];
 
-  function clearLongPress() {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }
-
-  function handleDown(
-    e: React.PointerEvent<SVGPathElement>,
-    countryId: string
-  ) {
-    longPressFired.current = false;
-    downPosRef.current = { x: e.clientX, y: e.clientY };
-    clearLongPress();
-    longPressTimer.current = setTimeout(() => {
-      longPressFired.current = true;
-      onCycle(countryId);
-    }, LONG_PRESS_MS);
-  }
-
-  function handleMove(e: React.PointerEvent<SVGPathElement>) {
-    const start = downPosRef.current;
-    if (!start) return;
-    if (
-      Math.abs(e.clientX - start.x) > 8 ||
-      Math.abs(e.clientY - start.y) > 8
-    ) {
-      clearLongPress();
-    }
-  }
-
   function handleClick(countryId: string) {
-    clearLongPress();
-    if (longPressFired.current) {
-      longPressFired.current = false;
-      return;
-    }
-    // eslint-disable-next-line react-hooks/purity
-    const now = Date.now();
-    const last = lastTapRef.current;
-    if (last && last.id === countryId && now - last.time < DOUBLE_TAP_MS) {
-      onCycle(countryId);
-      lastTapRef.current = null;
-      return;
-    }
-    lastTapRef.current = { id: countryId, time: now };
     onSelect(countryId);
   }
 
@@ -184,23 +131,8 @@ export function WorldMap({
                     <Geography
                       key={geo.rsmKey}
                       geography={geo}
-                      onPointerDown={(
-                        e: React.PointerEvent<SVGPathElement>
-                      ) => {
-                        if (country) handleDown(e, country.id);
-                      }}
-                      onPointerMove={handleMove}
-                      onPointerUp={() => clearLongPress()}
-                      onPointerLeave={() => clearLongPress()}
-                      onPointerCancel={() => clearLongPress()}
                       onClick={() => {
                         if (country) handleClick(country.id);
-                      }}
-                      onDoubleClick={() => {
-                        if (country) {
-                          clearLongPress();
-                          onCycle(country.id);
-                        }
                       }}
                       style={{
                         default: {

@@ -65,8 +65,7 @@
     "zoomIn": "拡大",
     "zoomOut": "縮小",
     "resetView": "表示をリセット",
-    "language": "言語",
-    "cycle": "次のステータスへ"
+    "language": "言語"
   },
   "messages": {
     "resetConfirm": "すべての記録を削除します。よろしいですか？",
@@ -74,8 +73,7 @@
     "importInvalid": "ファイルの形式が正しくありません。",
     "shareGenerating": "画像を生成中...",
     "shareSuccess": "画像をダウンロードしました。",
-    "shareError": "画像の生成に失敗しました。",
-    "interactionHint": "国をタップで編集／長押し・ダブルタップでステータスを切り替え"
+    "shareError": "画像の生成に失敗しました。"
   },
   "labels": {
     "selectCountry": "地図か一覧で国を選ぶとステータスを変更できます。",

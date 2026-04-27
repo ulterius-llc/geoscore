@@ -15,8 +15,6 @@ import { Legend } from '../components/Legend';
 import { ScoreSummary } from '../components/ScoreSummary';
 import { SelectedCountryCard } from '../components/SelectedCountryCard';
 import { ShareImagePanel } from '../components/ShareImagePanel';
-import { nextStatus } from '../lib/scoring';
-import type { Status } from '../lib/types';
 
 const WorldMap = dynamic(
   () => import('../components/WorldMap').then((m) => m.WorldMap),
@@ -56,15 +54,6 @@ export default function HomePage() {
     [isMobile]
   );
 
-  const cycleStatus = useCallback(
-    (id: string) => {
-      const current: Status = records[id] ?? 'never';
-      setStatus(id, nextStatus(current));
-      setSelectedId(id);
-    },
-    [records, setStatus]
-  );
-
   if (!ready) {
     return (
       <main className="flex flex-1 items-center justify-center">
@@ -87,12 +76,8 @@ export default function HomePage() {
               records={records}
               selectedId={selectedId}
               onSelect={selectFromMap}
-              onCycle={cycleStatus}
             />
             <Legend />
-            <p className="text-muted -mt-1 text-[11px]">
-              {t('messages.interactionHint')}
-            </p>
             <div className="hidden lg:block">
               <SelectedCountryCard
                 selectedId={selectedId}

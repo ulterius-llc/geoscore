@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect } from 'react';
-import { ChevronRight, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { COUNTRY_BY_ID } from '../lib/countries';
-import { SCORE_MAP, STATUS_ORDER, nextStatus } from '../lib/scoring';
+import { SCORE_MAP, STATUS_ORDER } from '../lib/scoring';
 import type { Status, StatusRecord } from '../lib/types';
 import { useStatusColors } from './useStatusColors';
 import { useCountryName } from './useCountryName';
@@ -120,17 +120,6 @@ export function CountryBottomSheet({
               );
             })}
           </div>
-
-          {country ? (
-            <button
-              type="button"
-              onClick={() => onChangeStatus(country.id, nextStatus(status))}
-              className="text-muted hover:text-foreground mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg py-2 text-xs"
-            >
-              {t('actions.cycle')}
-              <ChevronRight className="h-3.5 w-3.5" aria-hidden />
-            </button>
-          ) : null}
         </div>
       </div>
     </div>

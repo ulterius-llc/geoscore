@@ -96,11 +96,25 @@ export const COUNTRIES: Country[] = [
     region: 'north_africa',
   },
   {
+    id: '020',
+    iso_a3: 'AND',
+    name_ja: 'アンドラ',
+    name_en: 'Andorra',
+    region: 'southern_europe',
+  },
+  {
     id: '024',
     iso_a3: 'AGO',
     name_ja: 'アンゴラ',
     name_en: 'Angola',
     region: 'southern_africa',
+  },
+  {
+    id: '028',
+    iso_a3: 'ATG',
+    name_ja: 'アンティグア・バーブーダ',
+    name_en: 'Antigua and Barbuda',
+    region: 'central_america',
   },
   {
     id: '031',
@@ -138,6 +152,13 @@ export const COUNTRIES: Country[] = [
     region: 'central_america',
   },
   {
+    id: '048',
+    iso_a3: 'BHR',
+    name_ja: 'バーレーン',
+    name_en: 'Bahrain',
+    region: 'middle_east',
+  },
+  {
     id: '050',
     iso_a3: 'BGD',
     name_ja: 'バングラデシュ',
@@ -150,6 +171,13 @@ export const COUNTRIES: Country[] = [
     name_ja: 'アルメニア',
     name_en: 'Armenia',
     region: 'middle_east',
+  },
+  {
+    id: '052',
+    iso_a3: 'BRB',
+    name_ja: 'バルバドス',
+    name_en: 'Barbados',
+    region: 'central_america',
   },
   {
     id: '056',
@@ -264,6 +292,13 @@ export const COUNTRIES: Country[] = [
     region: 'north_america',
   },
   {
+    id: '132',
+    iso_a3: 'CPV',
+    name_ja: 'カーボベルデ',
+    name_en: 'Cabo Verde',
+    region: 'west_africa',
+  },
+  {
     id: '140',
     iso_a3: 'CAF',
     name_ja: '中央アフリカ共和国',
@@ -311,6 +346,13 @@ export const COUNTRIES: Country[] = [
     name_ja: 'コロンビア',
     name_en: 'Colombia',
     region: 'south_america',
+  },
+  {
+    id: '174',
+    iso_a3: 'COM',
+    name_ja: 'コモロ',
+    name_en: 'Comoros',
+    region: 'east_africa',
   },
   {
     id: '178',
@@ -374,6 +416,13 @@ export const COUNTRIES: Country[] = [
     name_ja: 'デンマーク',
     name_en: 'Denmark',
     region: 'northern_europe',
+  },
+  {
+    id: '212',
+    iso_a3: 'DMA',
+    name_ja: 'ドミニカ国',
+    name_en: 'Dominica',
+    region: 'central_america',
   },
   {
     id: '214',
@@ -509,6 +558,13 @@ export const COUNTRIES: Country[] = [
     region: 'west_africa',
   },
   {
+    id: '296',
+    iso_a3: 'KIR',
+    name_ja: 'キリバス',
+    name_en: 'Kiribati',
+    region: 'oceania',
+  },
+  {
     id: '300',
     iso_a3: 'GRC',
     name_ja: 'ギリシャ',
@@ -521,6 +577,13 @@ export const COUNTRIES: Country[] = [
     name_ja: 'グリーンランド',
     name_en: 'Greenland',
     region: 'north_america',
+  },
+  {
+    id: '308',
+    iso_a3: 'GRD',
+    name_ja: 'グレナダ',
+    name_en: 'Grenada',
+    region: 'central_america',
   },
   {
     id: '320',
@@ -549,6 +612,13 @@ export const COUNTRIES: Country[] = [
     name_ja: 'ハイチ',
     name_en: 'Haiti',
     region: 'central_america',
+  },
+  {
+    id: '336',
+    iso_a3: 'VAT',
+    name_ja: 'バチカン',
+    name_en: 'Vatican City',
+    region: 'southern_europe',
   },
   {
     id: '340',
@@ -733,6 +803,13 @@ export const COUNTRIES: Country[] = [
     region: 'north_africa',
   },
   {
+    id: '438',
+    iso_a3: 'LIE',
+    name_ja: 'リヒテンシュタイン',
+    name_en: 'Liechtenstein',
+    region: 'western_europe',
+  },
+  {
     id: '440',
     iso_a3: 'LTU',
     name_ja: 'リトアニア',
@@ -768,11 +845,25 @@ export const COUNTRIES: Country[] = [
     region: 'southeast_asia',
   },
   {
+    id: '462',
+    iso_a3: 'MDV',
+    name_ja: 'モルディブ',
+    name_en: 'Maldives',
+    region: 'south_asia',
+  },
+  {
     id: '466',
     iso_a3: 'MLI',
     name_ja: 'マリ',
     name_en: 'Mali',
     region: 'west_africa',
+  },
+  {
+    id: '470',
+    iso_a3: 'MLT',
+    name_ja: 'マルタ',
+    name_en: 'Malta',
+    region: 'southern_europe',
   },
   {
     id: '478',
@@ -782,11 +873,25 @@ export const COUNTRIES: Country[] = [
     region: 'west_africa',
   },
   {
+    id: '480',
+    iso_a3: 'MUS',
+    name_ja: 'モーリシャス',
+    name_en: 'Mauritius',
+    region: 'east_africa',
+  },
+  {
     id: '484',
     iso_a3: 'MEX',
     name_ja: 'メキシコ',
     name_en: 'Mexico',
     region: 'north_america',
+  },
+  {
+    id: '492',
+    iso_a3: 'MCO',
+    name_ja: 'モナコ',
+    name_en: 'Monaco',
+    region: 'western_europe',
   },
   {
     id: '496',
@@ -836,6 +941,13 @@ export const COUNTRIES: Country[] = [
     name_ja: 'ナミビア',
     name_en: 'Namibia',
     region: 'southern_africa',
+  },
+  {
+    id: '520',
+    iso_a3: 'NRU',
+    name_ja: 'ナウル',
+    name_en: 'Nauru',
+    region: 'oceania',
   },
   {
     id: '524',
@@ -899,6 +1011,27 @@ export const COUNTRIES: Country[] = [
     name_ja: 'ノルウェー',
     name_en: 'Norway',
     region: 'northern_europe',
+  },
+  {
+    id: '583',
+    iso_a3: 'FSM',
+    name_ja: 'ミクロネシア',
+    name_en: 'Micronesia',
+    region: 'oceania',
+  },
+  {
+    id: '584',
+    iso_a3: 'MHL',
+    name_ja: 'マーシャル諸島',
+    name_en: 'Marshall Islands',
+    region: 'oceania',
+  },
+  {
+    id: '585',
+    iso_a3: 'PLW',
+    name_ja: 'パラオ',
+    name_en: 'Palau',
+    region: 'oceania',
   },
   {
     id: '586',
@@ -1006,6 +1139,41 @@ export const COUNTRIES: Country[] = [
     region: 'east_africa',
   },
   {
+    id: '659',
+    iso_a3: 'KNA',
+    name_ja: 'セントクリストファー・ネイビス',
+    name_en: 'Saint Kitts and Nevis',
+    region: 'central_america',
+  },
+  {
+    id: '662',
+    iso_a3: 'LCA',
+    name_ja: 'セントルシア',
+    name_en: 'Saint Lucia',
+    region: 'central_america',
+  },
+  {
+    id: '670',
+    iso_a3: 'VCT',
+    name_ja: 'セントビンセント・グレナディーン',
+    name_en: 'Saint Vincent and the Grenadines',
+    region: 'central_america',
+  },
+  {
+    id: '674',
+    iso_a3: 'SMR',
+    name_ja: 'サンマリノ',
+    name_en: 'San Marino',
+    region: 'southern_europe',
+  },
+  {
+    id: '678',
+    iso_a3: 'STP',
+    name_ja: 'サントメ・プリンシペ',
+    name_en: 'São Tomé and Príncipe',
+    region: 'central_africa',
+  },
+  {
     id: '682',
     iso_a3: 'SAU',
     name_ja: 'サウジアラビア',
@@ -1027,11 +1195,25 @@ export const COUNTRIES: Country[] = [
     region: 'southern_europe',
   },
   {
+    id: '690',
+    iso_a3: 'SYC',
+    name_ja: 'セーシェル',
+    name_en: 'Seychelles',
+    region: 'east_africa',
+  },
+  {
     id: '694',
     iso_a3: 'SLE',
     name_ja: 'シエラレオネ',
     name_en: 'Sierra Leone',
     region: 'west_africa',
+  },
+  {
+    id: '702',
+    iso_a3: 'SGP',
+    name_ja: 'シンガポール',
+    name_en: 'Singapore',
+    region: 'southeast_asia',
   },
   {
     id: '703',
@@ -1160,6 +1342,13 @@ export const COUNTRIES: Country[] = [
     region: 'west_africa',
   },
   {
+    id: '776',
+    iso_a3: 'TON',
+    name_ja: 'トンガ',
+    name_en: 'Tonga',
+    region: 'oceania',
+  },
+  {
     id: '780',
     iso_a3: 'TTO',
     name_ja: 'トリニダード・トバゴ',
@@ -1193,6 +1382,13 @@ export const COUNTRIES: Country[] = [
     name_ja: 'トルクメニスタン',
     name_en: 'Turkmenistan',
     region: 'central_asia',
+  },
+  {
+    id: '798',
+    iso_a3: 'TUV',
+    name_ja: 'ツバル',
+    name_en: 'Tuvalu',
+    region: 'oceania',
   },
   {
     id: '800',
@@ -1270,6 +1466,13 @@ export const COUNTRIES: Country[] = [
     name_ja: 'ベネズエラ',
     name_en: 'Venezuela',
     region: 'south_america',
+  },
+  {
+    id: '882',
+    iso_a3: 'WSM',
+    name_ja: 'サモア',
+    name_en: 'Samoa',
+    region: 'oceania',
   },
   {
     id: '887',

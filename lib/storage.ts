@@ -25,12 +25,3 @@ export function saveRecords(records: StatusRecord): void {
     // Ignore quota or serialization errors and keep app usable.
   }
 }
-
-export function clearRecords(): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Ignore storage errors.
-  }
-}

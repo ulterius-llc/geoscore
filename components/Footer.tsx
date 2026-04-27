@@ -7,8 +7,8 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-border mt-6 border-t py-4 text-xs">
-      <div className="text-muted flex flex-wrap items-center justify-between gap-2">
+    <footer className="border-border mt-auto border-t py-4 pb-24 text-xs lg:pb-4">
+      <div className="text-muted mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 sm:flex-row sm:flex-wrap sm:justify-between">
         <p>
           {`\u00a9 ${currentYear}`} GeoScore by{' '}
           <a

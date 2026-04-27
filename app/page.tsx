@@ -132,12 +132,10 @@ export default function HomePage() {
               <ShareImagePanel records={records} />
             </div>
           </section>
-
-          <div className="lg:col-span-2">
-            <Footer />
-          </div>
         </div>
       </main>
+
+      <Footer />
 
       <CountryBottomSheet
         open={sheetOpen}

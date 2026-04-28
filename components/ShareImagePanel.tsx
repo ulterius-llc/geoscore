@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useMemo, useRef, useState } from 'react';
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import {
   ComposableMap,
@@ -26,6 +26,8 @@ const TEXT_MUTED = '#6b7280';
 const SURFACE = '#f7f7f8';
 const TRACK = '#e2e8f0';
 const PORTRAIT_TOTAL_Y_OFFSET = -36;
+const SHARE_NAME_KEY = 'geoscore.shareName.v1';
+const SHARE_NAME_MAX_LENGTH = 30;
 
 type ShareFormat = 'landscape' | 'portrait';
 
@@ -37,6 +39,7 @@ interface ShareCardProps {
   records: StatusRecord;
   format: ShareFormat;
   generatedAt: string;
+  name: string;
 }
 
 function computeBreakdown(records: StatusRecord) {
@@ -103,7 +106,7 @@ function formatGeneratedAt(date: Date, lang: string): string {
 }
 
 const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
-  { records, format, generatedAt },
+  { records, format, generatedAt, name },
   ref
 ) {
   const { t } = useTranslation();
@@ -141,8 +144,15 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
             alignItems: 'center',
           }}
         >
-          <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: -1 }}>
-            GeoScore
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: -1 }}>
+              GeoScore
+            </div>
+            {name ? (
+              <div style={{ fontSize: 24, color: TEXT_MUTED, fontWeight: 600 }}>
+                {t('labels.namedGeoScore', { name })}
+              </div>
+            ) : null}
           </div>
           <div style={{ fontSize: 22, color: TEXT_MUTED }}>{generatedAt}</div>
         </div>
@@ -368,7 +378,9 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
       >
         <div>
           <div style={{ fontSize: 14, color: '#6b7280' }}>
-            {t('labels.yourGeoScore')}
+            {name
+              ? t('labels.namedGeoScore', { name })
+              : t('labels.yourGeoScore')}
           </div>
           <div style={{ fontSize: 36, fontWeight: 700, marginTop: 4 }}>
             GeoScore
@@ -521,6 +533,23 @@ export function ShareImagePanel({ records }: ShareImagePanelProps) {
   const [generatedAt, setGeneratedAt] = useState<string>(() =>
     formatGeneratedAt(new Date(), i18n.language ?? 'en')
   );
+  const [name, setName] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    try {
+      return window.localStorage.getItem(SHARE_NAME_KEY) ?? '';
+    } catch {
+      return '';
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(SHARE_NAME_KEY, name);
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [name]);
 
   async function handleDownload(target: ShareFormat) {
     if (busy) return;
@@ -569,7 +598,18 @@ export function ShareImagePanel({ records }: ShareImagePanelProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col items-start gap-2">
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        maxLength={SHARE_NAME_MAX_LENGTH}
+        placeholder={t('labels.namePlaceholder')}
+        aria-label={t('labels.namePlaceholder')}
+        title={t('labels.nameHint')}
+        suppressHydrationWarning
+        className="border-border bg-surface focus:border-primary w-full rounded-full border px-3 py-1.5 text-sm outline-none"
+      />
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -619,6 +659,7 @@ export function ShareImagePanel({ records }: ShareImagePanelProps) {
           records={records}
           format={format}
           generatedAt={generatedAt}
+          name={name.trim()}
         />
       </div>
     </div>

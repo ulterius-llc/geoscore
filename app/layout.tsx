@@ -15,10 +15,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://geoscore.ulterius.dev'),
   title: 'GeoScore - Visualize your travel experience',
   description:
     'Mark every country you have lived in, stayed in, visited, or transited and see your GeoScore on an interactive world map.',
   manifest: '/manifest.webmanifest',
+  openGraph: {
+    title: 'GeoScore - Visualize your travel experience',
+    description:
+      'Mark every country you have lived in, stayed in, visited, or transited and see your GeoScore on an interactive world map.',
+    url: 'https://geoscore.ulterius.dev',
+    siteName: 'GeoScore',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'GeoScore - Visualize your travel experience',
+    description:
+      'Mark every country you have lived in, stayed in, visited, or transited and see your GeoScore on an interactive world map.',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

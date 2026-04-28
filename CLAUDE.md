@@ -16,7 +16,6 @@
 
 ## Code Style
 
-- Language: UI and Chat must be in Japanese
 - Comments: Write comments in English using a single clear sentence without special symbols
 - Components: Functional components with TypeScript interfaces
 - Storage: Use localStorage for data persistence

@@ -28,6 +28,7 @@ const TRACK = '#e2e8f0';
 const PORTRAIT_TOTAL_Y_OFFSET = -36;
 const SHARE_NAME_KEY = 'geoscore.shareName.v1';
 const SHARE_NAME_MAX_LENGTH = 30;
+const SHARE_URL = 'geoscore.ulterius.dev';
 
 type ShareFormat = 'landscape' | 'portrait';
 
@@ -350,6 +351,18 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
             </div>
           ))}
         </div>
+
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 24,
+            fontWeight: 600,
+            color: PRIMARY,
+            letterSpacing: 0.5,
+          }}
+        >
+          {SHARE_URL}
+        </div>
       </div>
     );
   }
@@ -511,6 +524,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
         style={{
           display: 'flex',
           justifyContent: 'space-between',
+          alignItems: 'center',
           fontSize: 12,
           color: TEXT_MUTED,
         }}
@@ -518,6 +532,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
         <span>
           {`${t('summary.visited')}: ${visited} / ${COUNTRIES.length} ${t('summary.countries')}`}
         </span>
+        <span style={{ fontWeight: 600, color: PRIMARY }}>{SHARE_URL}</span>
         <span>{`${t('labels.generatedAt')}: ${generatedAt}`}</span>
       </div>
     </div>

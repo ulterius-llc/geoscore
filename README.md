@@ -25,13 +25,13 @@ GeoScore runs **fully on the client** — all data is stored in your browser's `
 
 ## Scoring System
 
-| Score | Label | Meaning |
-| :---: | :---- | :------ |
-| 4 | Live | Lived there |
-| 3 | Stay | Stayed overnight |
-| 2 | Visit | Day visit |
-| 1 | Transit | Transit only |
-| 0 | Never | Never been |
+| Score | Label   | Meaning          |
+| :---: | :------ | :--------------- |
+|   4   | Live    | Lived there      |
+|   3   | Stay    | Stayed overnight |
+|   2   | Visit   | Day visit        |
+|   1   | Transit | Transit only     |
+|   0   | Never   | Never been       |
 
 ## Tech Stack
 
@@ -80,13 +80,13 @@ Outputs a static site to `/out`, ready to deploy to any static host (Cloudflare 
 
 ## Available Commands
 
-| Command | Description |
-| :------ | :---------- |
-| `npm run dev` | Start the development server |
-| `npm run build` | Build a static export to `/out` |
-| `npm run start` | Run the production server |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format code with Prettier |
+| Command          | Description                     |
+| :--------------- | :------------------------------ |
+| `npm run dev`    | Start the development server    |
+| `npm run build`  | Build a static export to `/out` |
+| `npm run start`  | Run the production server       |
+| `npm run lint`   | Run ESLint                      |
+| `npm run format` | Format code with Prettier       |
 
 ## Project Structure
 

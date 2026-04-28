@@ -1,7 +1,7 @@
 name: Country Data Issue
 description: Report incorrect country data or request additions
-title: "[Country]: "
-labels: ["country-data"]
+title: '[Country]: '
+labels: ['country-data']
 body:
   - type: markdown
     attributes:

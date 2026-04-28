@@ -2,10 +2,12 @@
 
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { COUNTRIES } from '../lib/countries';
+import type { MapDef } from '../lib/maps/types';
 import { SCORE_MAP, STATUS_ORDER } from '../lib/scoring';
 import type { Status, StatusRecord } from '../lib/types';
+import { useActiveMap } from './GeoScoreProvider';
 import { useStatusColors } from './useStatusColors';
+import { useStatusLabel } from './useStatusLabel';
 
 interface ScoreSummaryProps {
   records: StatusRecord;
@@ -19,7 +21,7 @@ interface SummaryStats {
   byStatus: Record<Status, number>;
 }
 
-function computeStats(records: StatusRecord): SummaryStats {
+function computeStats(records: StatusRecord, map: MapDef): SummaryStats {
   const byStatus: Record<Status, number> = {
     live: 0,
     stay: 0,
@@ -29,17 +31,17 @@ function computeStats(records: StatusRecord): SummaryStats {
   };
   let total = 0;
   let visited = 0;
-  for (const country of COUNTRIES) {
-    const status = records[country.id] ?? 'never';
+  for (const place of map.places) {
+    const status = records[place.id] ?? 'never';
     byStatus[status] += 1;
     total += SCORE_MAP[status];
     if (status !== 'never') visited += 1;
   }
   return {
     total,
-    max: COUNTRIES.length * SCORE_MAP.live,
+    max: map.places.length * SCORE_MAP.live,
     visited,
-    countries: COUNTRIES.length,
+    countries: map.places.length,
     byStatus,
   };
 }
@@ -47,7 +49,9 @@ function computeStats(records: StatusRecord): SummaryStats {
 export function ScoreSummary({ records }: ScoreSummaryProps) {
   const { t } = useTranslation();
   const colors = useStatusColors();
-  const stats = useMemo(() => computeStats(records), [records]);
+  const map = useActiveMap();
+  const statusLabel = useStatusLabel();
+  const stats = useMemo(() => computeStats(records, map), [records, map]);
   const ratePct =
     stats.max > 0 ? Math.round((stats.total / stats.max) * 1000) / 10 : 0;
 
@@ -99,7 +103,7 @@ export function ScoreSummary({ records }: ScoreSummaryProps) {
             />
             <div className="flex min-w-0 flex-1 items-baseline justify-between gap-1">
               <span className="text-muted text-xs">
-                {t(`status.${status}`)}
+                {statusLabel(status)}
               </span>
               <span className="text-sm font-medium tabular-nums">
                 {stats.byStatus[status]}

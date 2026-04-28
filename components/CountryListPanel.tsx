@@ -3,29 +3,20 @@
 import { ChevronDown, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  CONTINENT_ORDER,
-  COUNTRIES,
-  COUNTRIES_BY_REGION,
-  REGIONS_BY_CONTINENT,
-} from '../lib/countries';
+import type { MapDef, Place } from '../lib/maps/types';
 import { SCORE_MAP } from '../lib/scoring';
-import type {
-  Continent,
-  Country,
-  Region,
-  Status,
-  StatusRecord,
-} from '../lib/types';
+import type { Status, StatusRecord } from '../lib/types';
+import { useActiveMap } from './GeoScoreProvider';
 import { StatusSelector } from './StatusSelector';
 import { useCountryName } from './useCountryName';
 import { useStatusColors } from './useStatusColors';
+import { useStatusLabel } from './useStatusLabel';
 
 interface CountryListPanelProps {
   records: StatusRecord;
   selectedId: string | null;
-  onSelect: (countryId: string) => void;
-  onChangeStatus: (countryId: string, status: Status) => void;
+  onSelect: (placeId: string) => void;
+  onChangeStatus: (placeId: string, status: Status) => void;
 }
 
 export function CountryListPanel({
@@ -35,39 +26,41 @@ export function CountryListPanel({
   onChangeStatus,
 }: CountryListPanelProps) {
   const { t } = useTranslation();
-  const [openContinents, setOpenContinents] = useState<Record<string, boolean>>(
+  const map = useActiveMap();
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [openSubgroups, setOpenSubgroups] = useState<Record<string, boolean>>(
     {}
   );
-  const [openRegions, setOpenRegions] = useState<Record<string, boolean>>({});
   const [query, setQuery] = useState('');
   const getName = useCountryName();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return null;
-    return COUNTRIES.filter(
-      (c) =>
-        c.name_ja.toLowerCase().includes(q) ||
-        c.name_en.toLowerCase().includes(q) ||
-        c.iso_a3.toLowerCase().includes(q)
-    ).sort((a, b) => getName(a).localeCompare(getName(b)));
-  }, [query, getName]);
+    return map.places
+      .filter(
+        (p) =>
+          p.name_ja.toLowerCase().includes(q) ||
+          p.name_en.toLowerCase().includes(q) ||
+          p.code.toLowerCase().includes(q)
+      )
+      .sort((a, b) => getName(a).localeCompare(getName(b)));
+  }, [query, getName, map.places]);
 
-  function toggleContinent(continent: Continent) {
-    const wasOpen = openContinents[continent] ?? false;
-    setOpenContinents((prev) => ({ ...prev, [continent]: !wasOpen }));
+  function toggleGroup(group: string, mapDef: MapDef) {
+    const wasOpen = openGroups[group] ?? false;
+    setOpenGroups((prev) => ({ ...prev, [group]: !wasOpen }));
     if (wasOpen) {
-      // Closing the parent collapses every nested region too.
-      const regions: Region[] = REGIONS_BY_CONTINENT[continent];
-      setOpenRegions((prev) => {
+      const subgroups = mapDef.subgroupsByGroup[group] ?? [];
+      setOpenSubgroups((prev) => {
         const next = { ...prev };
-        for (const region of regions) delete next[region];
+        for (const sub of subgroups) delete next[sub];
         return next;
       });
     }
   }
-  function toggleRegion(region: string) {
-    setOpenRegions((prev) => ({ ...prev, [region]: !prev[region] }));
+  function toggleSubgroup(sub: string) {
+    setOpenSubgroups((prev) => ({ ...prev, [sub]: !prev[sub] }));
   }
 
   return (
@@ -103,48 +96,46 @@ export function CountryListPanel({
               {t('labels.noResults')}
             </li>
           ) : (
-            filtered.map((country) => (
-              <CountryRow
-                key={country.id}
-                country={country}
-                status={records[country.id] ?? 'never'}
-                isSelected={country.id === selectedId}
-                onSelect={() => onSelect(country.id)}
-                onChangeStatus={(s) => onChangeStatus(country.id, s)}
+            filtered.map((place) => (
+              <PlaceRow
+                key={place.id}
+                place={place}
+                status={records[place.id] ?? 'never'}
+                isSelected={place.id === selectedId}
+                onSelect={() => onSelect(place.id)}
+                onChangeStatus={(s) => onChangeStatus(place.id, s)}
               />
             ))
           )}
         </ul>
       ) : (
         <ul className="space-y-2">
-          {CONTINENT_ORDER.map((continent) => {
-            const regions = REGIONS_BY_CONTINENT[continent];
-            const continentCountries = regions.flatMap(
-              (r) => COUNTRIES_BY_REGION[r]
-            );
-            if (continentCountries.length === 0) return null;
-            const visited = continentCountries.filter(
-              (c) => records[c.id] && records[c.id] !== 'never'
+          {map.groups.map((group) => {
+            const subgroups = map.subgroupsByGroup[group] ?? [];
+            const groupPlaces = map.placesByGroup[group] ?? [];
+            if (groupPlaces.length === 0) return null;
+            const visited = groupPlaces.filter(
+              (p) => records[p.id] && records[p.id] !== 'never'
             ).length;
-            const open = openContinents[continent] ?? false;
-            const hasSubregions = regions.length > 1;
+            const open = openGroups[group] ?? false;
+            const hasSubgroups = subgroups.length > 1;
             return (
               <li
-                key={continent}
+                key={group}
                 className="border-border overflow-hidden rounded-xl border"
               >
                 <button
                   type="button"
                   className="bg-surface hover:bg-background flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors"
                   aria-expanded={open}
-                  onClick={() => toggleContinent(continent)}
+                  onClick={() => toggleGroup(group, map)}
                 >
                   <span className="flex items-center gap-2">
                     <span className="text-sm font-medium">
-                      {t(`continent.${continent}`)}
+                      {t(`${map.groupKeyPrefix}.${group}`)}
                     </span>
                     <span className="text-muted text-xs tabular-nums">
-                      {visited} / {continentCountries.length}
+                      {visited} / {groupPlaces.length}
                     </span>
                   </span>
                   <ChevronDown
@@ -153,50 +144,50 @@ export function CountryListPanel({
                   />
                 </button>
                 <Collapse open={open}>
-                  {hasSubregions ? (
+                  {hasSubgroups ? (
                     <ul className="bg-background space-y-1 px-2 py-2">
-                      {regions.map((region) => {
-                        const regionCountries = COUNTRIES_BY_REGION[region];
-                        if (regionCountries.length === 0) return null;
-                        const regionVisited = regionCountries.filter(
-                          (c) => records[c.id] && records[c.id] !== 'never'
+                      {subgroups.map((sub) => {
+                        const subPlaces = map.placesBySubgroup[sub] ?? [];
+                        if (subPlaces.length === 0) return null;
+                        const subVisited = subPlaces.filter(
+                          (p) => records[p.id] && records[p.id] !== 'never'
                         ).length;
-                        const regionOpen = openRegions[region] ?? false;
+                        const subOpen = openSubgroups[sub] ?? false;
                         return (
                           <li
-                            key={region}
+                            key={sub}
                             className="border-border bg-surface overflow-hidden rounded-lg border"
                           >
                             <button
                               type="button"
                               className="hover:bg-background flex w-full items-center justify-between px-3 py-2 text-left transition-colors"
-                              aria-expanded={regionOpen}
-                              onClick={() => toggleRegion(region)}
+                              aria-expanded={subOpen}
+                              onClick={() => toggleSubgroup(sub)}
                             >
                               <span className="flex items-center gap-2">
                                 <span className="text-foreground text-sm">
-                                  {t(`region.${region}`)}
+                                  {t(`${map.subgroupKeyPrefix}.${sub}`)}
                                 </span>
                                 <span className="text-muted text-xs tabular-nums">
-                                  {regionVisited} / {regionCountries.length}
+                                  {subVisited} / {subPlaces.length}
                                 </span>
                               </span>
                               <ChevronDown
-                                className={`h-4 w-4 transition-transform duration-200 ${regionOpen ? 'rotate-180' : ''}`}
+                                className={`h-4 w-4 transition-transform duration-200 ${subOpen ? 'rotate-180' : ''}`}
                                 aria-hidden
                               />
                             </button>
-                            <Collapse open={regionOpen}>
+                            <Collapse open={subOpen}>
                               <ul className="divide-border bg-background divide-y">
-                                {regionCountries.map((country) => (
-                                  <CountryRow
-                                    key={country.id}
-                                    country={country}
-                                    status={records[country.id] ?? 'never'}
-                                    isSelected={country.id === selectedId}
-                                    onSelect={() => onSelect(country.id)}
+                                {subPlaces.map((place) => (
+                                  <PlaceRow
+                                    key={place.id}
+                                    place={place}
+                                    status={records[place.id] ?? 'never'}
+                                    isSelected={place.id === selectedId}
+                                    onSelect={() => onSelect(place.id)}
                                     onChangeStatus={(s) =>
-                                      onChangeStatus(country.id, s)
+                                      onChangeStatus(place.id, s)
                                     }
                                   />
                                 ))}
@@ -208,14 +199,14 @@ export function CountryListPanel({
                     </ul>
                   ) : (
                     <ul className="divide-border bg-background divide-y">
-                      {continentCountries.map((country) => (
-                        <CountryRow
-                          key={country.id}
-                          country={country}
-                          status={records[country.id] ?? 'never'}
-                          isSelected={country.id === selectedId}
-                          onSelect={() => onSelect(country.id)}
-                          onChangeStatus={(s) => onChangeStatus(country.id, s)}
+                      {groupPlaces.map((place) => (
+                        <PlaceRow
+                          key={place.id}
+                          place={place}
+                          status={records[place.id] ?? 'never'}
+                          isSelected={place.id === selectedId}
+                          onSelect={() => onSelect(place.id)}
+                          onChangeStatus={(s) => onChangeStatus(place.id, s)}
                         />
                       ))}
                     </ul>
@@ -248,24 +239,25 @@ function Collapse({ open, children }: CollapseProps) {
   );
 }
 
-interface CountryRowProps {
-  country: Country;
+interface PlaceRowProps {
+  place: Place;
   status: Status;
   isSelected: boolean;
   onSelect: () => void;
   onChangeStatus: (status: Status) => void;
 }
 
-function CountryRow({
-  country,
+function PlaceRow({
+  place,
   status,
   isSelected,
   onSelect,
   onChangeStatus,
-}: CountryRowProps) {
+}: PlaceRowProps) {
   const { t } = useTranslation();
   const colors = useStatusColors();
   const getName = useCountryName();
+  const statusLabel = useStatusLabel();
   return (
     <li
       className={`px-3 py-2 transition-colors duration-150 ${isSelected ? 'bg-background' : ''}`}
@@ -281,10 +273,10 @@ function CountryRow({
             className="border-border inline-block h-3.5 w-3.5 shrink-0 rounded-sm border transition-colors duration-200"
             style={{ backgroundColor: colors[status] }}
           />
-          <span className="min-w-0 truncate text-sm">{getName(country)}</span>
+          <span className="min-w-0 truncate text-sm">{getName(place)}</span>
         </span>
         <span className="text-muted shrink-0 text-xs tabular-nums">
-          {t(`status.${status}`)}{' '}
+          {statusLabel(status)}{' '}
           {t('labels.scoreFormat', { n: SCORE_MAP[status] })}
         </span>
       </button>

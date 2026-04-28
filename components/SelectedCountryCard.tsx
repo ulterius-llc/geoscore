@@ -2,16 +2,17 @@
 
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { COUNTRY_BY_ID } from '../lib/countries';
 import { SCORE_MAP } from '../lib/scoring';
 import type { Status, StatusRecord } from '../lib/types';
+import { useActiveMap } from './GeoScoreProvider';
 import { StatusSelector } from './StatusSelector';
 import { useCountryName } from './useCountryName';
+import { useStatusLabel } from './useStatusLabel';
 
 interface SelectedCountryCardProps {
   selectedId: string | null;
   records: StatusRecord;
-  onChangeStatus: (countryId: string, status: Status) => void;
+  onChangeStatus: (placeId: string, status: Status) => void;
   onClear: () => void;
 }
 
@@ -22,10 +23,12 @@ export function SelectedCountryCard({
   onClear,
 }: SelectedCountryCardProps) {
   const { t } = useTranslation();
+  const map = useActiveMap();
   const getName = useCountryName();
-  const country = selectedId ? COUNTRY_BY_ID.get(selectedId) : null;
+  const statusLabel = useStatusLabel();
+  const place = selectedId ? map.placeById.get(selectedId) : null;
 
-  if (!country) {
+  if (!place) {
     return (
       <section className="border-border bg-surface rounded-2xl border p-4">
         <p className="text-muted text-sm">{t('labels.selectCountry')}</p>
@@ -33,15 +36,15 @@ export function SelectedCountryCard({
     );
   }
 
-  const status: Status = records[country.id] ?? 'never';
+  const status: Status = records[place.id] ?? 'never';
 
   return (
     <section className="border-border bg-surface rounded-2xl border p-4">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">{getName(country)}</h2>
+          <h2 className="text-base font-semibold">{getName(place)}</h2>
           <p className="text-muted text-xs">
-            {country.iso_a3} ・ {t(`region.${country.region}`)}
+            {place.code} ・ {t(`${map.subgroupKeyPrefix}.${place.subgroup}`)}
           </p>
         </div>
         <button
@@ -55,10 +58,10 @@ export function SelectedCountryCard({
       </div>
       <StatusSelector
         value={status}
-        onChange={(s) => onChangeStatus(country.id, s)}
+        onChange={(s) => onChangeStatus(place.id, s)}
       />
       <p className="text-muted mt-2 text-xs">
-        {t(`status.${status}`)} ({SCORE_MAP[status]}
+        {statusLabel(status)} ({SCORE_MAP[status]}
         {t('labels.scoreSuffix')})
       </p>
     </section>

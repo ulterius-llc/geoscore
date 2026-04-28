@@ -10,25 +10,27 @@ import {
   Sphere,
   ZoomableGroup,
 } from 'react-simple-maps';
-import { COUNTRY_BY_ID, resolveCountryId } from '../lib/countries';
+import type { MapDef } from '../lib/maps/types';
 import { STATUS_COLORS, STATUS_DARK_COLORS } from '../lib/scoring';
 import type { Status, StatusRecord } from '../lib/types';
+import { useActiveMap } from './GeoScoreProvider';
 
 interface WorldMapProps {
   records: StatusRecord;
   selectedId: string | null;
-  onSelect: (countryId: string) => void;
-  geographyUrl?: string;
+  onSelect: (placeId: string) => void;
+  map?: MapDef;
 }
-
-const DEFAULT_GEOGRAPHY = '/world-110m.json';
 
 export function WorldMap({
   records,
   selectedId,
   onSelect,
-  geographyUrl = DEFAULT_GEOGRAPHY,
+  map: explicitMap,
 }: WorldMapProps) {
+  const contextMap = useActiveMap();
+  const map = explicitMap ?? contextMap;
+
   const [isDark, setIsDark] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
@@ -57,15 +59,17 @@ export function WorldMap({
   const { t, i18n } = useTranslation();
   const langJa = i18n.language?.startsWith('ja') ?? false;
 
-  const initialZoom = isMobile ? 2.4 : 1.25;
+  const initialZoom = isMobile
+    ? map.view.initialZoomMobile
+    : map.view.initialZoomDesktop;
   const initialCenter: [number, number] = isMobile
-    ? langJa
-      ? [138, 36]
-      : [-98, 38]
-    : [15, 20];
+    ? langJa && map.view.initialCenterMobileJa
+      ? map.view.initialCenterMobileJa
+      : map.view.initialCenterMobile
+    : map.view.initialCenterDesktop;
 
-  function handleClick(countryId: string) {
-    onSelect(countryId);
+  function handleClick(placeId: string) {
+    onSelect(placeId);
   }
 
   function handleResetClick() {
@@ -74,30 +78,34 @@ export function WorldMap({
     setDirty(false);
   }
 
+  const aspectClass =
+    map.kind === 'us'
+      ? 'aspect-3/4 sm:aspect-16/10 lg:aspect-980/580'
+      : 'aspect-3/4 sm:aspect-16/10 lg:aspect-980/520';
+
+  const showSphere = map.kind === 'world';
+
   return (
     <div
       className="geo-map relative w-full overflow-hidden rounded-2xl"
       style={{ backgroundColor: oceanFill }}
     >
-      <div className="aspect-3/4 sm:aspect-16/10 lg:aspect-980/520">
+      <div className={aspectClass}>
         <ComposableMap
-          key={resetKey}
-          projection="geoEqualEarth"
-          width={980}
-          height={520}
-          projectionConfig={{ scale: 175 }}
-          preserveAspectRatio="xMidYMid slice"
+          key={`${map.kind}-${resetKey}`}
+          projection={map.projection.name}
+          width={map.projection.width}
+          height={map.projection.height}
+          projectionConfig={map.projection.config}
+          preserveAspectRatio={map.projection.preserveAspectRatio}
           style={{ width: '100%', height: '100%', display: 'block' }}
         >
           <ZoomableGroup
             center={initialCenter}
             zoom={initialZoom}
-            minZoom={0.85}
-            maxZoom={12}
-            translateExtent={[
-              [-300, -300],
-              [1280, 820],
-            ]}
+            minZoom={map.view.minZoom}
+            maxZoom={map.view.maxZoom}
+            translateExtent={map.view.translateExtent}
             onMoveStart={() => setDirty(true)}
             filterZoomEvent={
               ((event: { type: string }) =>
@@ -106,33 +114,33 @@ export function WorldMap({
               ) => boolean
             }
           >
-            <Sphere
-              id="sphere"
-              stroke="transparent"
-              strokeWidth={0}
-              fill={oceanFill}
-            />
-            <Geographies geography={geographyUrl}>
-              {({ geographies }) =>
-                geographies.map((geo) => {
-                  const countryId = resolveCountryId(
+            {showSphere ? (
+              <Sphere
+                id="sphere"
+                stroke="transparent"
+                strokeWidth={0}
+                fill={oceanFill}
+              />
+            ) : null}
+            <Geographies geography={map.geographyUrl}>
+              {({ geographies: geos }) =>
+                geos.map((geo) => {
+                  const placeId = map.resolveId(
                     typeof geo.id === 'string' ? geo.id : undefined,
                     geo.properties?.name
                   );
-                  const country = countryId
-                    ? COUNTRY_BY_ID.get(countryId)
-                    : null;
-                  const status: Status = country
-                    ? (records[country.id] ?? 'never')
+                  const place = placeId ? map.placeById.get(placeId) : null;
+                  const status: Status = place
+                    ? (records[place.id] ?? 'never')
                     : 'never';
-                  const isSelected = country?.id === selectedId;
+                  const isSelected = place?.id === selectedId;
                   const fill = colors[status];
                   return (
                     <Geography
                       key={geo.rsmKey}
                       geography={geo}
                       onClick={() => {
-                        if (country) handleClick(country.id);
+                        if (place) handleClick(place.id);
                       }}
                       style={{
                         default: {
@@ -140,7 +148,7 @@ export function WorldMap({
                           stroke: isSelected ? selectedStroke : borderColor,
                           strokeWidth: isSelected ? 1.4 : 0.4,
                           outline: 'none',
-                          cursor: country ? 'pointer' : 'default',
+                          cursor: place ? 'pointer' : 'default',
                           transition: 'fill 160ms ease, stroke 160ms ease',
                         },
                         hover: {

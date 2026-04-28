@@ -12,6 +12,9 @@
     "transit": "乗り継ぎ",
     "never": "未訪問"
   },
+  "usStatus": {
+    "transit": "通過"
+  },
   "summary": {
     "total": "合計スコア",
     "max": "最大スコア",
@@ -51,6 +54,17 @@
     "south_america": "南アメリカ",
     "oceania": "オセアニア",
     "antarctica": "南極"
+  },
+  "usGroup": {
+    "us_east": "東部",
+    "us_central": "中央部",
+    "us_west": "西部",
+    "us_islands": "諸島・領土"
+  },
+  "map": {
+    "world": "世界",
+    "us": "アメリカ",
+    "switchTo": "地図を切り替え"
   },
   "actions": {
     "export": "エクスポート",

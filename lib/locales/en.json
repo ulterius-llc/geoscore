@@ -12,6 +12,9 @@
     "transit": "Transit",
     "never": "Unvisited"
   },
+  "usStatus": {
+    "transit": "Pass through"
+  },
   "summary": {
     "total": "Total score",
     "max": "Max score",
@@ -51,6 +54,17 @@
     "south_america": "South America",
     "oceania": "Oceania",
     "antarctica": "Antarctica"
+  },
+  "usGroup": {
+    "us_east": "East",
+    "us_central": "Central",
+    "us_west": "West",
+    "us_islands": "Islands & Territories"
+  },
+  "map": {
+    "world": "World",
+    "us": "USA",
+    "switchTo": "Switch map"
   },
   "actions": {
     "export": "Export",

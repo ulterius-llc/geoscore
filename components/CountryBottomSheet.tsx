@@ -3,17 +3,18 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { COUNTRY_BY_ID } from '../lib/countries';
 import { SCORE_MAP, STATUS_ORDER } from '../lib/scoring';
 import type { Status, StatusRecord } from '../lib/types';
+import { useActiveMap } from './GeoScoreProvider';
 import { useStatusColors } from './useStatusColors';
 import { useCountryName } from './useCountryName';
+import { useStatusLabel } from './useStatusLabel';
 
 interface CountryBottomSheetProps {
   open: boolean;
   selectedId: string | null;
   records: StatusRecord;
-  onChangeStatus: (countryId: string, status: Status) => void;
+  onChangeStatus: (placeId: string, status: Status) => void;
   onClose: () => void;
 }
 
@@ -27,7 +28,9 @@ export function CountryBottomSheet({
   const { t } = useTranslation();
   const colors = useStatusColors();
   const getName = useCountryName();
-  const country = selectedId ? COUNTRY_BY_ID.get(selectedId) : null;
+  const statusLabel = useStatusLabel();
+  const map = useActiveMap();
+  const place = selectedId ? map.placeById.get(selectedId) : null;
 
   useEffect(() => {
     if (!open) return;
@@ -38,8 +41,8 @@ export function CountryBottomSheet({
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  const visible = open && country !== null;
-  const status: Status = country ? (records[country.id] ?? 'never') : 'never';
+  const visible = open && place !== null;
+  const status: Status = place ? (records[place.id] ?? 'never') : 'never';
 
   return (
     <div
@@ -69,11 +72,12 @@ export function CountryBottomSheet({
         <div className="border-border flex items-start justify-between gap-3 border-b px-4 pt-3 pb-2.5">
           <div className="min-w-0">
             <p className="text-foreground truncate text-base font-semibold">
-              {country ? getName(country) : ''}
+              {place ? getName(place) : ''}
             </p>
-            {country ? (
+            {place ? (
               <p className="text-muted truncate text-xs">
-                {country.iso_a3} ・ {t(`region.${country.region}`)}
+                {place.code} ・{' '}
+                {t(`${map.subgroupKeyPrefix}.${place.subgroup}`)}
               </p>
             ) : null}
           </div>
@@ -96,7 +100,7 @@ export function CountryBottomSheet({
                   key={s}
                   type="button"
                   onClick={() => {
-                    if (country) onChangeStatus(country.id, s);
+                    if (place) onChangeStatus(place.id, s);
                   }}
                   className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-150 ease-out active:scale-[0.98] ${
                     active
@@ -110,7 +114,7 @@ export function CountryBottomSheet({
                       className="inline-block h-4 w-4 rounded"
                       style={{ backgroundColor: colors[s] }}
                     />
-                    <span className="font-medium">{t(`status.${s}`)}</span>
+                    <span className="font-medium">{statusLabel(s)}</span>
                   </span>
                   <span className="text-muted text-xs tabular-nums">
                     {SCORE_MAP[s]}

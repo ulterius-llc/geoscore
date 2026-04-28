@@ -10,15 +10,11 @@ import {
 } from 'react-simple-maps';
 import { ImageDown, Loader2, Smartphone, Tv2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import {
-  CONTINENT_ORDER,
-  COUNTRIES,
-  COUNTRIES_BY_CONTINENT,
-  COUNTRY_BY_ID,
-  resolveCountryId,
-} from '../lib/countries';
+import type { MapDef } from '../lib/maps/types';
 import { SCORE_MAP, STATUS_COLORS, STATUS_ORDER } from '../lib/scoring';
-import type { Continent, Status, StatusRecord } from '../lib/types';
+import type { Status, StatusRecord } from '../lib/types';
+import { useActiveMap } from './GeoScoreProvider';
+import { statusLabelKey } from './useStatusLabel';
 
 const PRIMARY = '#0f766e';
 const TEXT_PRIMARY = '#111418';
@@ -28,7 +24,8 @@ const TRACK = '#e2e8f0';
 const PORTRAIT_TOTAL_Y_OFFSET = -36;
 const SHARE_NAME_KEY = 'geoscore.shareName.v1';
 const SHARE_NAME_MAX_LENGTH = 30;
-const SHARE_URL = 'geoscore.ulterius.dev';
+const SHARE_URL_WORLD = 'geoscore.ulterius.dev';
+const SHARE_URL_US = 'geoscore.ulterius.dev/us';
 
 type ShareFormat = 'landscape' | 'portrait';
 
@@ -41,9 +38,10 @@ interface ShareCardProps {
   format: ShareFormat;
   generatedAt: string;
   name: string;
+  map: MapDef;
 }
 
-function computeBreakdown(records: StatusRecord) {
+function computeBreakdown(records: StatusRecord, map: MapDef) {
   const byStatus: Record<Status, number> = {
     live: 0,
     stay: 0,
@@ -52,34 +50,34 @@ function computeBreakdown(records: StatusRecord) {
     never: 0,
   };
   let total = 0;
-  for (const country of COUNTRIES) {
-    const status = records[country.id] ?? 'never';
+  for (const place of map.places) {
+    const status = records[place.id] ?? 'never';
     byStatus[status] += 1;
     total += SCORE_MAP[status];
   }
   return { byStatus, total };
 }
 
-interface ContinentStat {
-  continent: Continent;
+interface GroupStat {
+  group: string;
   visited: number;
   total: number;
   pct: number;
 }
 
-function computeContinentStats(records: StatusRecord): ContinentStat[] {
-  return CONTINENT_ORDER.map((continent) => {
-    const list = COUNTRIES_BY_CONTINENT[continent];
+function computeGroupStats(records: StatusRecord, map: MapDef): GroupStat[] {
+  return map.groups.map((group) => {
+    const list = map.placesByGroup[group] ?? [];
     let visited = 0;
     let score = 0;
-    for (const c of list) {
-      const status = records[c.id] ?? 'never';
+    for (const p of list) {
+      const status = records[p.id] ?? 'never';
       if (status !== 'never') visited += 1;
       score += SCORE_MAP[status];
     }
     const maxScore = list.length * SCORE_MAP.live;
     return {
-      continent,
+      group,
       visited,
       total: list.length,
       pct: maxScore > 0 ? Math.round((score / maxScore) * 100) : 0,
@@ -107,19 +105,21 @@ function formatGeneratedAt(date: Date, lang: string): string {
 }
 
 const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
-  { records, format, generatedAt, name },
+  { records, format, generatedAt, name, map },
   ref
 ) {
   const { t } = useTranslation();
   const { byStatus, total } = useMemo(
-    () => computeBreakdown(records),
-    [records]
+    () => computeBreakdown(records, map),
+    [records, map]
   );
-  const continents = useMemo(() => computeContinentStats(records), [records]);
-  const visited = COUNTRIES.length - byStatus.never;
-  const maxScore = COUNTRIES.length * SCORE_MAP.live;
+  const groups = useMemo(() => computeGroupStats(records, map), [records, map]);
+  const visited = map.places.length - byStatus.never;
+  const maxScore = map.places.length * SCORE_MAP.live;
   const overallPct = maxScore > 0 ? Math.round((total / maxScore) * 100) : 0;
   const formatScore = (n: number) => t('labels.scoreFormat', { n });
+  const shareUrl = map.kind === 'us' ? SHARE_URL_US : SHARE_URL_WORLD;
+  const showSphere = map.kind === 'world';
 
   if (format === 'portrait') {
     return (
@@ -239,7 +239,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
               fontVariantNumeric: 'tabular-nums',
             }}
           >
-            {`${t('summary.rate')} ${overallPct}% ・ ${t('summary.visited')} ${visited} / ${COUNTRIES.length}`}
+            {`${t('summary.rate')} ${overallPct}% ・ ${t('summary.visited')} ${visited} / ${map.places.length}`}
           </div>
         </div>
 
@@ -273,7 +273,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
                   fontWeight: 600,
                 }}
               >
-                {`${t(`status.${status}`)}・${formatScore(SCORE_MAP[status])}`}
+                {`${t(statusLabelKey(status, map))}・${formatScore(SCORE_MAP[status])}`}
               </div>
               <div
                 style={{
@@ -304,9 +304,9 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
           <div style={{ fontSize: 28, fontWeight: 700 }}>
             {t('summary.rate')}
           </div>
-          {continents.map((c) => (
+          {groups.map((c) => (
             <div
-              key={c.continent}
+              key={c.group}
               style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
             >
               <div
@@ -319,7 +319,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
                 }}
               >
                 <span style={{ fontWeight: 600 }}>
-                  {t(`continent.${c.continent}`)}
+                  {t(`${map.groupKeyPrefix}.${c.group}`)}
                 </span>
                 <span
                   style={{
@@ -361,7 +361,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
             letterSpacing: 0.5,
           }}
         >
-          {SHARE_URL}
+          {shareUrl}
         </div>
       </div>
     );
@@ -426,28 +426,30 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
         }}
       >
         <ComposableMap
-          projection="geoEqualEarth"
-          width={1008}
-          height={520}
-          projectionConfig={{ scale: 180 }}
+          projection={map.shareProjection.name}
+          width={map.shareProjection.width}
+          height={map.shareProjection.height}
+          projectionConfig={map.shareProjection.config}
           style={{ width: '100%', height: 'auto', display: 'block' }}
         >
-          <Sphere
-            id="share-sphere-landscape"
-            stroke="transparent"
-            strokeWidth={0}
-            fill="#e5edf5"
-          />
-          <Geographies geography="/world-110m.json">
+          {showSphere ? (
+            <Sphere
+              id="share-sphere"
+              stroke="transparent"
+              strokeWidth={0}
+              fill="#e5edf5"
+            />
+          ) : null}
+          <Geographies geography={map.geographyUrl}>
             {({ geographies }) =>
               geographies.map((geo) => {
-                const cid = resolveCountryId(
+                const cid = map.resolveId(
                   typeof geo.id === 'string' ? geo.id : undefined,
                   geo.properties?.name
                 );
-                const country = cid ? COUNTRY_BY_ID.get(cid) : null;
-                const status: Status = country
-                  ? (records[country.id] ?? 'never')
+                const place = cid ? map.placeById.get(cid) : null;
+                const status: Status = place
+                  ? (records[place.id] ?? 'never')
                   : 'never';
                 return (
                   <Geography
@@ -502,7 +504,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
                 alignSelf: 'flex-start',
               }}
             >
-              {`${t(`status.${status}`)}・${formatScore(SCORE_MAP[status])}`}
+              {`${t(statusLabelKey(status, map))}・${formatScore(SCORE_MAP[status])}`}
             </div>
             <div
               style={{
@@ -530,9 +532,9 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
         }}
       >
         <span>
-          {`${t('summary.visited')}: ${visited} / ${COUNTRIES.length} ${t('summary.countries')}`}
+          {`${t('summary.visited')}: ${visited} / ${map.places.length} ${t('summary.countries')}`}
         </span>
-        <span style={{ fontWeight: 600, color: PRIMARY }}>{SHARE_URL}</span>
+        <span style={{ fontWeight: 600, color: PRIMARY }}>{shareUrl}</span>
         <span>{`${t('labels.generatedAt')}: ${generatedAt}`}</span>
       </div>
     </div>
@@ -541,6 +543,7 @@ const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
 
 export function ShareImagePanel({ records }: ShareImagePanelProps) {
   const { t, i18n } = useTranslation();
+  const map = useActiveMap();
   const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -600,7 +603,8 @@ export function ShareImagePanel({ records }: ShareImagePanelProps) {
       const link = document.createElement('a');
       link.href = dataUrl;
       const stamp = new Date().toISOString().slice(0, 10);
-      link.download = `geoscore-${target}-${stamp}.png`;
+      const prefix = map.kind === 'us' ? 'geoscore-us' : 'geoscore';
+      link.download = `${prefix}-${target}-${stamp}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -675,6 +679,7 @@ export function ShareImagePanel({ records }: ShareImagePanelProps) {
           format={format}
           generatedAt={generatedAt}
           name={name.trim()}
+          map={map}
         />
       </div>
     </div>

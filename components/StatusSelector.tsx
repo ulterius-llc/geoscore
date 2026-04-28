@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { SCORE_MAP, STATUS_ORDER } from '../lib/scoring';
 import type { Status } from '../lib/types';
 import { useStatusColors } from './useStatusColors';
+import { useStatusLabel } from './useStatusLabel';
 
 interface StatusSelectorProps {
   value: Status;
@@ -18,6 +19,7 @@ export function StatusSelector({
 }: StatusSelectorProps) {
   const { t } = useTranslation();
   const colors = useStatusColors();
+  const statusLabel = useStatusLabel();
   const padding = size === 'sm' ? 'px-2 py-1 text-xs' : 'px-2.5 py-1.5 text-sm';
   return (
     <div role="radiogroup" className="flex flex-wrap gap-1.5">
@@ -41,7 +43,7 @@ export function StatusSelector({
               className="inline-block h-2.5 w-2.5 rounded-sm"
               style={{ backgroundColor: colors[status] }}
             />
-            <span>{t(`status.${status}`)}</span>
+            <span>{statusLabel(status)}</span>
             <span className="tabular-nums opacity-70">
               {t('labels.scoreFormat', { n: SCORE_MAP[status] })}
             </span>

@@ -4,8 +4,9 @@ import { useRef, useState } from 'react';
 import { Download, RotateCcw, Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ExportPayload, Status, StatusRecord } from '../lib/types';
-import { COUNTRY_BY_ID } from '../lib/countries';
+import type { MapDef } from '../lib/maps/types';
 import { STATUS_ORDER } from '../lib/scoring';
+import { useActiveMap } from './GeoScoreProvider';
 
 interface ImportExportButtonsProps {
   records: StatusRecord;
@@ -28,7 +29,7 @@ function isStatus(value: unknown): value is Status {
   );
 }
 
-function parseImport(text: string): StatusRecord | null {
+function parseImport(text: string, map: MapDef): StatusRecord | null {
   try {
     const data = JSON.parse(text) as unknown;
     if (!data || typeof data !== 'object') return null;
@@ -41,7 +42,7 @@ function parseImport(text: string): StatusRecord | null {
     for (const [id, value] of Object.entries(raw)) {
       if (!isStatus(value)) continue;
       if (value === 'never') continue;
-      if (!COUNTRY_BY_ID.has(id)) continue;
+      if (!map.placeById.has(id)) continue;
       next[id] = value;
     }
     return next;
@@ -56,8 +57,11 @@ export function ImportExportButtons({
   onReset,
 }: ImportExportButtonsProps) {
   const { t } = useTranslation();
+  const map = useActiveMap();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState<string | null>(null);
+
+  const exportFilenamePrefix = map.kind === 'us' ? 'geoscore-us' : 'geoscore';
 
   function handleExport() {
     const payload = buildExport(records);
@@ -68,7 +72,7 @@ export function ImportExportButtons({
     const link = document.createElement('a');
     link.href = url;
     const stamp = new Date().toISOString().slice(0, 10);
-    link.download = `geoscore-${stamp}.json`;
+    link.download = `${exportFilenamePrefix}-${stamp}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -77,7 +81,7 @@ export function ImportExportButtons({
 
   async function handleFile(file: File) {
     const text = await file.text();
-    const parsed = parseImport(text);
+    const parsed = parseImport(text, map);
     if (!parsed) {
       setMessage(t('messages.importInvalid'));
       return;

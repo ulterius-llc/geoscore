@@ -1,6 +1,6 @@
 {
   "name": "geoscore",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A web app to track and score your world travel experiences.",
   "author": "Ulterius LLC",
   "homepage": "https://geoscore.ulterius.dev",
@@ -44,4 +44,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   }
+
 }
